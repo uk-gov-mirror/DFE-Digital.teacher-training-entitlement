@@ -69,4 +69,18 @@ Rails.application.routes.draw do
   get "/500", to: "errors#internal_server_error", via: :all
 
   get "/development_login", to: "registration_wizard#development_login"
+
+  namespace :reception do
+    resources :start, only: :index
+    resources :cannot_register_yet, only: :index
+    resources :course_start_dates, only: %i[index create]
+    resources :choose_your_course, only: %i[index create]
+    resources :choose_your_provider, only: %i[index create]
+    resources :teacher_catchment, only: %i[index create]
+    resources :work_setting, only: %i[index create]
+    resources :choose_school, only: %i[index create]
+    resources :possible_funding, only: %i[index create]
+    resources :ineligible_for_funding, only: %i[index create]
+    resources :funding_your_course, only: :index
+  end
 end

@@ -1,0 +1,18 @@
+<% content_for :before_content do %>
+  <%= render GovukComponent::BackLinkComponent.new(text: "Back", href: reception_choose_your_provider_index_path) %>
+<% end %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <%= form_with model: @form, scope: :form, url: reception_teacher_catchment_index_path do |f| %>
+      <%= render "reception/form_errors", f:, form: @form %>
+      <% legend = { text: I18n.t("helpers.legend.registration_wizard.teacher_catchment"), tag: "h1", size: "xl" } %>
+      <%= f.govuk_radio_buttons_fieldset(:teacher_catchment, **{ legend: }) do %>
+        <%= f.govuk_radio_button(:teacher_catchment, 'england', label: { text: 'Yes' }) %>
+        <%= f.govuk_radio_button(:teacher_catchment, 'another', label: { text: 'No' }) %>
+      <% end %>
+
+      <%= f.govuk_submit %>
+    <% end  %>
+  </div>
+</div>

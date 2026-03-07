@@ -75,6 +75,26 @@
   - number_of_pupils
   - phase_name
   - phase_type
+  :reception_registrations:
+  - id
+  - cohort_id
+  - course_id
+  - course_start
+  - created_at
+  - funding_eligiblity_status_code
+  - get_an_identity_id
+  - inside_catchment
+  - institution_identifier
+  - institution_name
+  - kind_of_nursery
+  - lead_provider_id
+  - teacher_catchment
+  - trn
+  - updated_at
+  - user_id
+  - works_in_childcare
+  - works_in_school
+  - work_setting
   :legacy_passed_participant_outcomes:
   - id
   - completion_date
@@ -162,6 +182,7 @@
   - date_of_birth
   - national_insurance_number
   - raw_tra_provider_data
+  - registration_json
   :bulk_operations:
   - id
   - admin_id

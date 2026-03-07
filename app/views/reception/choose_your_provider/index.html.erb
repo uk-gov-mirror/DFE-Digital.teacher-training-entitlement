@@ -1,0 +1,22 @@
+<% content_for :before_content do %>
+  <%= render GovukComponent::BackLinkComponent.new(text: "Back", href: reception_choose_your_course_index_path) %>
+<% end %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <%= form_with model: @form, scope: :form, url: reception_choose_your_provider_index_path do |f| %>
+      <%= render "reception/form_errors", f:, form: @form %>
+      <% legend = { text: I18n.t("helpers.legend.registration_wizard.lead_provider_id"), tag: "h1", size: "xl" } %>
+      <%= f.govuk_radio_buttons_fieldset(:lead_provider_id, **{ legend:, tag: "h2", size: "m" }) do %>
+        <% @form.lead_providers.each do |lead_provider| %>
+          <%= f.govuk_radio_button(:lead_provider_id, lead_provider.id, label: { text: lead_provider.name }) %>
+        <% end %>
+      <% end %>
+      <%= f.govuk_radio_button(:lead_provider_id, @form.not_chosen_option, label: { text: I18n.t("helpers.label.registration_wizard.lead_provider_id_options.not_chosen") }) %>
+
+      <%= govuk_warning_text(text: t('helpers.warnings.registration_wizard.check_provider_is_open')) %>
+      
+      <%= f.govuk_submit %>
+    <% end  %>
+  </div>
+</div>

@@ -18,6 +18,7 @@ class User < ApplicationRecord
   has_many :declarations, through: :applications
   has_many :participant_id_changes, -> { order("created_at desc") }
   has_many :declarations, through: :applications
+  has_many :reception_registrations, dependent: :destroy
 
   validates :full_name, presence: true
 
