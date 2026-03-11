@@ -51,7 +51,11 @@ module ApplicationHelper
   end
 
   def application_course_start_date
-    "autumn 2025"
+    Cohort.application_course_start_date
+  end
+
+  def application_next_course_start_date
+    Cohort.application_next_course_start_date
   end
 
   def show_otp_code_in_ui(current_env, admin)

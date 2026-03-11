@@ -24,10 +24,8 @@ class FundingEligibility
               :course,
               :trn,
               :get_an_identity_id,
-              :query_store
-
-  delegate :work_setting,
-           to: :query_store
+              :kind_of_nursery,
+              :work_setting
 
   # NOTE: get_an_identity_id is a temporary parameter while we migrate to Teacher Auth/OneLogin
   def initialize(institution:,
@@ -35,14 +33,23 @@ class FundingEligibility
                  inside_catchment:,
                  trn:,
                  get_an_identity_id:,
-                 query_store:,
+                 kind_of_nursery:,
+                 work_setting:,
                  **)
     @institution = institution
     @course = course
     @inside_catchment = inside_catchment
     @get_an_identity_id = get_an_identity_id
     @trn = trn
-    @query_store = query_store
+    @kind_of_nursery = kind_of_nursery
+    @work_setting = work_setting
+  end
+
+  def eligible_for_funding?
+    @institution.in_england? &&
+      @institution.eligible_establishment? &&
+      !previously_funded? &&
+      funded?
   end
 
   def funded?
@@ -58,7 +65,7 @@ class FundingEligibility
       return NOT_IN_ENGLAND unless @inside_catchment
       return PREVIOUSLY_FUNDED if previously_funded?
 
-      case work_setting
+      case @work_setting
       when *Questionnaires::WorkSetting::CHILDCARE_SETTINGS then childcare_policy
       when *Questionnaires::WorkSetting::SCHOOL_SETTINGS then school_policy
       else INELIGIBLE_SETTING
@@ -76,10 +83,8 @@ class FundingEligibility
 private
 
   def childcare_policy
-    kind_of_nursery = query_store.store["kind_of_nursery"]
-
     return INELIGIBLE_SETTING unless mandatory_institution.eligible_establishment?
-    return FUNDED_ELIGIBILITY_RESULT if kind_of_nursery.in?(ELIGIBLE_NURSERY_TYPES)
+    return FUNDED_ELIGIBILITY_RESULT if @kind_of_nursery.in?(ELIGIBLE_NURSERY_TYPES)
 
     INELIGIBLE_SETTING
   end

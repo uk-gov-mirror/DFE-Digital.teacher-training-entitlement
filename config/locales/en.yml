@@ -884,6 +884,7 @@ en:
         childcare_provider_not_in_england: "Nursery must be in England, Guernsey, Jersey or the Isle of Man"
         maths_cannot_register: "You cannot register for the leading primary mathematics NPQ"
         cannot_register_yet: "You cannot register yet"
+        funding_your_course: "Funding your course"
         check_answers: "Check your answers and confirm"
         institution_location: What is the first part of your workplace postcode?
         find_childcare_provider: What is the first part of your workplace postcode?
@@ -947,10 +948,7 @@ en:
         reason: Required for deferred or withdrawn
 
       registration_wizard:
-        choose_your_course:
-          - This course is aimed at teachers who have completed their induction and are currently teaching reception age children, or plan to in the future.
-
-          - If you do not want to do this course, %{link} to find the right course for you.
+        choose_your_course: "If you do not want to do this course, %{link} to find the right course for you."
         choose_your_npq_html: "To register for an NPQ and the <a href=\"https://professional-development-for-teachers-leaders.education.gov.uk/early-headship-coaching-offer\" class=\"govuk-link\">Early headship coaching offer</a>, submit 2 separate registrations."
         maths_eligibility_teaching_for_mastery_html_one: "You need to be able to demonstrate that you have an understanding of mastery approaches to teaching maths."
         maths_eligibility_teaching_for_mastery_two_html: "You can demonstrate this if you’ve taken at least one year of the <a href=\"https://www.gov.uk/guidance/join-the-maths-teaching-for-mastery-programme\" class=\"govuk-link\">primary maths Teaching for Mastery programme</a>."
@@ -959,6 +957,7 @@ en:
         course_start_date_three: "Early headship coaching offer start dates vary by provider and are throughout the year."
         maths_understanding_of_approach_html: "Your provider will ask you for details."
         work_setting_options:
+          early_years_or_childcare_html: ""
           a_16_to_19_educational_setting_html: "Includes:<ul class=\"question-hint-list\"><li>sixth form colleges</li><li>further education colleges</li><li>schools that also teach ages 16 to 19</li></ul>"
           a_school_html: "Includes:<ul class=\"question-hint-list\"><li>local authority maintained schools (some may provide hospital education, for example pupil referral units, alternative provision or special schools)</li><li>secure children’s homes and secure training centres</li></ul>"
           an_academy_trust_html: "<div class=\"govuk-!-margin-bottom-1\">Some may provide hospital education (for example, alternative provision or academy special schools)</p>"

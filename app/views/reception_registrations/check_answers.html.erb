@@ -1,0 +1,31 @@
+<% content_for :title do %>
+  <%= t("helpers.title.registration_wizard.check_answers") %>
+<% end %>
+
+<%= render "reception_registrations/backlink", step: @step %>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl">Check your answers and submit</h1>
+
+    <%= render GovukComponent::SummaryListComponent.new do |component|
+          current_registration.answers.each do |answer|
+            component.with_row do |row|
+              row.with_key { answer.key }
+              row.with_value { answer.value }
+              row.with_action(
+                text: 'Change',
+                visually_hidden_text: answer.key,
+                href: reception_registration_path(answer.step),
+              )
+            end
+          end
+    end %>
+
+    <%= govuk_warning_text(text: "If you enter your information incorrectly, it may result in you not being offered a funded place on an NPQ course.") %>
+
+    <%= form_with model: @form, scope: :form, url: reception_registration_path(@step.name), method: :patch do |f| %>
+      <%= f.govuk_submit "Submit" %>
+    <% end %>
+
+  </div>
+</div>

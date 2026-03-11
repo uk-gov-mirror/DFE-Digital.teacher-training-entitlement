@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_02_093855) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_06_095612) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -512,6 +512,32 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_02_093855) do
     t.index ["provider_urn"], name: "index_private_childcare_providers_on_provider_urn"
   end
 
+  create_table "reception_registrations", force: :cascade do |t|
+    t.bigint "cohort_id"
+    t.bigint "course_id"
+    t.string "course_start"
+    t.datetime "created_at", null: false
+    t.boolean "eligible_for_funding"
+    t.string "funding"
+    t.string "funding_eligibility_status_code"
+    t.string "get_an_identity_id"
+    t.boolean "inside_catchment"
+    t.string "institution_identifier"
+    t.string "institution_name"
+    t.string "kind_of_nursery"
+    t.bigint "lead_provider_id"
+    t.string "teacher_catchment"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.boolean "works_in_childcare"
+    t.boolean "works_in_school"
+    t.string "work_setting"
+    t.index ["cohort_id"], name: "index_reception_registrations_on_cohort_id"
+    t.index ["course_id"], name: "index_reception_registrations_on_course_id"
+    t.index ["lead_provider_id"], name: "index_reception_registrations_on_lead_provider_id"
+    t.index ["user_id"], name: "index_reception_registrations_on_user_id"
+  end
+
   create_table "registration_interests", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.citext "email", null: false
@@ -640,6 +666,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_02_093855) do
     t.string "preferred_name"
     t.string "provider"
     t.jsonb "raw_tra_provider_data"
+    t.jsonb "registration_json", default: {}, null: false
     t.datetime "significantly_updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "trn"
     t.boolean "trn_auto_verified", default: false
@@ -706,6 +733,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_02_093855) do
   add_foreign_key "participant_id_changes", "users"
   add_foreign_key "participant_outcome_api_requests", "participant_outcomes"
   add_foreign_key "participant_outcomes", "declarations"
+  add_foreign_key "reception_registrations", "cohorts"
+  add_foreign_key "reception_registrations", "courses"
+  add_foreign_key "reception_registrations", "lead_providers"
+  add_foreign_key "reception_registrations", "users"
   add_foreign_key "schedules", "cohorts"
   add_foreign_key "statement_items", "declarations"
   add_foreign_key "statement_items", "statements"

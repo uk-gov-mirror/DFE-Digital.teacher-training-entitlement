@@ -1,0 +1,12 @@
+<%= render "reception_registrations/backlink", step: @step %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <%= render "registration_wizard/possible_funding/eligible_for_scholarship_funding", course: current_registration.course, funding_amount: nil %>
+    <%= form_with model: @form, scope: :form, url: reception_registration_path(@step.name), method: :patch do |f| %>
+      <%= render "reception/form_errors", f:, form: @form %>
+
+      <%= f.govuk_submit %>
+    <% end  %>
+  </div>
+</div>
