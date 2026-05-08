@@ -54,6 +54,22 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
         expect(user.reload).to have_attributes(email:, full_name: verified_name.join(" "))
       end
     end
+
+    context "when another user has the same email" do
+      let!(:clashing_user) { create(:user, email:) }
+
+      it "clears the email from the clashing user" do
+        make_request
+        clashing_user.reload
+        expect(clashing_user.email).to match(/\Aarchived-\d+-#{Regexp.escape(email)}\z/)
+        expect(clashing_user.archived_email).to eq(email)
+      end
+
+      it "updates the matched user with the new email" do
+        make_request
+        expect(user.reload.email).to eq(email)
+      end
+    end
   end
 
   context "when the TRN matches a verified TRN on more than one user" do
@@ -134,6 +150,22 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
           )
         end
       end
+
+      context "when another user has the same email" do
+        let!(:clashing_user) { create(:user, email:) }
+
+        it "clears the email from the clashing user" do
+          make_request
+          clashing_user.reload
+          expect(clashing_user.email).to match(/\Aarchived-\d+-#{Regexp.escape(email)}\z/)
+          expect(clashing_user.archived_email).to eq(email)
+        end
+
+        it "updates the matched user with the new email" do
+          make_request
+          expect(existing_user.reload.email).to eq(email)
+        end
+      end
     end
 
     context "when no user exists with the same provider and UID" do
@@ -148,6 +180,22 @@ RSpec.describe Users::FindOrCreateFromTeacherAuth do
           date_of_birth: Date.parse("1990-01-01"),
           feature_flag_id:,
         )
+      end
+
+      context "when another user has the same email" do
+        let!(:clashing_user) { create(:user, email:) }
+
+        it "clears the email from the clashing user" do
+          make_request
+          clashing_user.reload
+          expect(clashing_user.email).to match(/\Aarchived-\d+-#{Regexp.escape(email)}\z/)
+          expect(clashing_user.archived_email).to eq(email)
+        end
+
+        it "creates the new user with the email" do
+          make_request
+          expect(User.find_by(provider: "teacher_auth", uid:).email).to eq(email)
+        end
       end
     end
   end

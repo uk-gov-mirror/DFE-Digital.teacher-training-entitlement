@@ -15,33 +15,50 @@ module Users
     attr_reader :uid, :trn, :email, :full_name, :date_of_birth, :feature_flag_id, :refresh_token
 
     def call
-      if trn.present?
-        user_matched_using_trn = matching_users.first
+      User.transaction do
+        if trn.present?
+          user_matched_using_trn = matching_users.first
 
-        if user_matched_using_trn
-          user_matched_using_trn.update!(
-            uid:, provider: Omniauth::Strategies::TeacherAuth::NAME, email:, full_name:, feature_flag_id:,
+          if user_matched_using_trn
+            clear_clashing_email(exclude_user: user_matched_using_trn)
+            user_matched_using_trn.update!(
+              uid:, provider: Omniauth::Strategies::TeacherAuth::NAME, email:, full_name:, feature_flag_id:,
+              **refresh_token_attributes
+            )
+            merge_and_archive_other_users(user_matched_using_trn, matching_users[1..])
+            return user_matched_using_trn
+          end
+        end
+
+        user_matched_using_uid = User.find_by(provider: Omniauth::Strategies::TeacherAuth::NAME, uid:)
+
+        if user_matched_using_uid
+          clear_clashing_email(exclude_user: user_matched_using_uid)
+          user_matched_using_uid.update!(
+            email:, trn:, trn_verified: trn.present?, trn_auto_verified: trn.present?, full_name:, feature_flag_id:,
             **refresh_token_attributes
           )
-          merge_and_archive_other_users(user_matched_using_trn, matching_users[1..])
-          return user_matched_using_trn
+          return user_matched_using_uid
         end
+
+        clear_clashing_email
+        create_user_with_provider_data
       end
-
-      user_matched_using_uid = User.find_by(provider: Omniauth::Strategies::TeacherAuth::NAME, uid:)
-
-      if user_matched_using_uid
-        user_matched_using_uid.update!(
-          email:, trn:, trn_verified: trn.present?, trn_auto_verified: trn.present?, full_name:, feature_flag_id:,
-          **refresh_token_attributes
-        )
-        return user_matched_using_uid
-      end
-
-      create_user_with_provider_data
     end
 
   private
+
+    def clear_clashing_email(exclude_user: nil)
+      scope = exclude_user ? User.where.not(id: exclude_user.id) : User
+      clashing_user = scope.find_by(email:)
+      return unless clashing_user
+
+      Rails.logger.info("[TeacherAuth] Email clash: clearing email for user ID=#{clashing_user.id}")
+      clashing_user.update_columns(
+        archived_email: clashing_user.email,
+        email: "archived-#{Time.current.to_i}-#{clashing_user.email}",
+      )
+    end
 
     def matching_users
       @matching_users ||= User.where(trn:, trn_verified: true, archived_at: nil).order(updated_at: :desc).to_a
