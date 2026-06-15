@@ -1,4 +1,9 @@
 FactoryBot.define do
+  factory :application_event do
+    application
+    event { Application::ACCEPTED }
+  end
+
   factory :state_change do
     application
     event { Application::ACCEPTED }

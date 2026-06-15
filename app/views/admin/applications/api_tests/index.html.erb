@@ -115,6 +115,17 @@
         end
         row.with_value(text: "- Show the application details")
       end
+
+      unless Rails.env.production? || !current_admin&.super_admin?
+        sl.with_row do |row|
+          row.with_key do
+            form_with url: admin_applications_api_tests_reset_to_pending_path(@application) do |f|
+              f.govuk_submit "Reset to pending", warning: true
+            end
+          end
+          row.with_value(text: "- Reset this application to pending and destroy all application events and declarations")
+        end
+      end
     end
   %>
 </div>

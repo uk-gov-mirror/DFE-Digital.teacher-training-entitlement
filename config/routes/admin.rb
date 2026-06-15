@@ -77,6 +77,9 @@ namespace :admin do
           resources :void_declarations, only: %i[index create]
           resources :list_applications, only: %i[index]
           resources :applications, only: %i[index show], param: :ecf_id
+          unless Rails.env.production?
+            resource :reset_to_pending, controller: "reset_to_pending", only: %i[create]
+          end
         end
         resource :revert_to_pending, controller: "revert_to_pending", only: %i[new create]
         resource :change_status, only: %i[new create]
