@@ -142,6 +142,23 @@ class Declaration < ApplicationRecord
     SQL
   end
 
+  def clawback!
+    self.clawback_declaration = ClawbackDeclaration.new(
+      paid_declaration: self,
+      application: application,
+      milestone: milestone,
+      cohort: cohort,
+      # statement: Statement.find_next_open_by(@declaration.application.course_cohort),
+      lead_provider: lead_provider,
+      delivery_partner: delivery_partner,
+      secondary_delivery_partner: secondary_delivery_partner,
+      declaration_type: declaration_type,
+      declaration_date: declaration_date,
+      state: "awaiting_clawback",
+    )
+    save!
+  end
+
   def billable_statement
     statement_items.find(&:billable?)&.statement
   end
