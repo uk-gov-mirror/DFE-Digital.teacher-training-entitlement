@@ -22,6 +22,8 @@ module Declarations
 
       ApplicationRecord.transaction do
         @clawback_declaration.save!
+        @declaration.clawback_declaration = @clawback_declaration
+        @declaration.save!
         ParticipantOutcomes::Void.new(declaration: @declaration).void_outcome
 
         if @declaration.started_declaration_type?
