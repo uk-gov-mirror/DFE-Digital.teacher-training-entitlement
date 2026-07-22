@@ -2340,12 +2340,10 @@ components:
               enum:
               - submitted
               - eligible
+              - ineligible
+              - voided
               - payable
               - paid
-              - voided
-              - ineligible
-              - awaiting_clawback
-              - clawed_back
             has_passed:
               description: Whether the participant has failed or passed
               type: boolean
