@@ -16,7 +16,11 @@ class Admin::CohortCoursesController < AdminController
   end
 
   def create
-    service = CourseCohorts::Create.new(course_cohort_params)
+    service = CourseCohorts::Create.new(
+      cohort:,
+      course_cohort_params:,
+      lead_provider_params:,
+    )
     service.call
     if service.errors.blank?
       @course_cohort = service.course_cohort
@@ -32,9 +36,56 @@ class Admin::CohortCoursesController < AdminController
 private
 
   def course_cohort_params
+    permitted_params = params.require(:course_cohort)
+      .permit(
+        :course_id,
+        :academic_year,
+        *date_param_keys(:training_starts_at, :training_ends_at),
+      )
+
+    {
+      course_id: permitted_params[:course_id],
+      academic_year: permitted_params[:academic_year],
+      training_starts_at: date_from(permitted_params, :training_starts_at),
+      training_ends_at: date_from(permitted_params, :training_ends_at),
+    }
+  end
+
+  def lead_provider_params
     params.require(:course_cohort)
-      .permit(:course_id, :academic_year, :training_starts_at, :training_ends_at, lead_providers: {})
-      .merge(cohort:)
+      .fetch(:lead_providers, ActionController::Parameters.new)
+      .permit(*lead_provider_param_keys)
+  end
+
+  def date_param_keys(*attribute_names)
+    attribute_names.flat_map do |attribute_name|
+      [
+        attribute_name,
+        "#{attribute_name}(1i)",
+        "#{attribute_name}(2i)",
+        "#{attribute_name}(3i)",
+      ]
+    end
+  end
+
+  def date_from(params, attribute_name)
+    value = params[attribute_name] || params[attribute_name.to_s]
+    return value if value.present?
+
+    date_fragments = (1..3).map do |position|
+      params["#{attribute_name}(#{position}i)"] || params[:"#{attribute_name}(#{position}i)"]
+    end
+    return if date_fragments.all?(&:blank?)
+
+    Date.new(*date_fragments.map(&:to_i))
+  rescue ArgumentError, TypeError
+    nil
+  end
+
+  def lead_provider_param_keys
+    LeadProvider.pluck(:id).map do |lead_provider_id|
+      { lead_provider_id.to_s => %i[id teacher_funding recruitment_target] }
+    end
   end
 
   def course_cohort

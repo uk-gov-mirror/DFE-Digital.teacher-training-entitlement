@@ -3,21 +3,27 @@
 module CourseCohorts
   class Create
     include ActiveModel::Model
-    include ActiveModel::Attributes
-    include ActiveRecord::AttributeAssignment
 
-    attribute :cohort
-    attribute :course_id
-    attribute :course_cohort
-    attribute :training_starts_at, :date_or_hash
-    attribute :training_ends_at, :date_or_hash
-    attribute :lead_providers
+    attr_reader :cohort,
+                :course_id,
+                :course_cohort,
+                :training_starts_at,
+                :training_ends_at,
+                :lead_provider_params
 
     validates :cohort, presence: true
     validates :course_id, presence: true
     validate :course_present
     validates :training_starts_at, presence: true
     validate :at_least_one_lead_provider_selected
+
+    def initialize(cohort:, course_cohort_params:, lead_provider_params:)
+      @cohort = cohort
+      @course_id = course_cohort_params[:course_id]
+      @training_starts_at = course_cohort_params[:training_starts_at]
+      @training_ends_at = course_cohort_params[:training_ends_at]
+      @lead_provider_params = lead_provider_params
+    end
 
     def call
       return if invalid?
@@ -26,7 +32,7 @@ module CourseCohorts
       academic_year = cohort.start_year
 
       CourseCohort.transaction do
-        self.course_cohort = cohort.course_cohorts.create!(
+        @course_cohort = cohort.course_cohorts.create!(
           course:,
           academic_year:,
           term_identifier:,
@@ -66,7 +72,7 @@ module CourseCohorts
   private
 
     def selected_providers
-      lead_providers&.select { |_, attrs| attrs["id"].present? && attrs["id"] != "0" }
+      lead_provider_params&.select { |_, attrs| attrs["id"].present? && attrs["id"] != "0" }
     end
 
     def course_present

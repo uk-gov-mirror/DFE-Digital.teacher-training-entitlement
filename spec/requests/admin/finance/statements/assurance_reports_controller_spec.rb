@@ -19,10 +19,14 @@ RSpec.describe Admin::Finance::Statements::AssuranceReportsController, type: :re
 
     let(:lead_provider) { create(:lead_provider) }
     let(:statement)     { create(:statement, lead_provider:) }
+    let(:course)        { create(:course) }
+    let(:cohort)        { create(:cohort, :current) }
+    let(:course_cohort) { create(:course_cohort, course:, cohort:, schedule: create(:schedule, cohort:)) }
+    let(:application)   { create(:application, :accepted, course_cohort:, lead_provider:) }
 
     let :declaration do
       travel_to(statement.deadline_date) do
-        create(:declaration, statement:, lead_provider:)
+        create(:declaration, statement:, lead_provider:, application:)
       end
     end
 
