@@ -16,7 +16,11 @@ class Admin::CohortCoursesController < AdminController
   end
 
   def create
-    service = CourseCohorts::Create.new(course_cohort_params)
+    service = CourseCohorts::Create.new(
+      cohort:,
+      course_cohort_params:,
+      lead_provider_params:,
+    )
     service.call
     if service.errors.blank?
       @course_cohort = service.course_cohort
@@ -33,8 +37,34 @@ private
 
   def course_cohort_params
     params.require(:course_cohort)
-      .permit(:course_id, :academic_year, :training_starts_at, :training_ends_at, lead_providers: {})
-      .merge(cohort:)
+      .permit(
+        :course_id,
+        :academic_year,
+        *date_param_keys(:training_starts_at, :training_ends_at),
+      )
+  end
+
+  def lead_provider_params
+    params.require(:course_cohort)
+      .fetch(:lead_providers, ActionController::Parameters.new)
+      .permit(*lead_provider_param_keys)
+  end
+
+  def date_param_keys(*attribute_names)
+    attribute_names.flat_map do |attribute_name|
+      [
+        attribute_name,
+        "#{attribute_name}(1i)",
+        "#{attribute_name}(2i)",
+        "#{attribute_name}(3i)",
+      ]
+    end
+  end
+
+  def lead_provider_param_keys
+    LeadProvider.pluck(:id).map do |lead_provider_id|
+      { lead_provider_id.to_s => %i[id teacher_funding recruitment_target] }
+    end
   end
 
   def course_cohort

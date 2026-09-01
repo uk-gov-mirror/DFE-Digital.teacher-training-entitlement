@@ -11,13 +11,22 @@ module CourseCohorts
     attribute :course_cohort
     attribute :training_starts_at, :date_or_hash
     attribute :training_ends_at, :date_or_hash
-    attribute :lead_providers
+    attribute :lead_provider_params
 
     validates :cohort, presence: true
     validates :course_id, presence: true
     validate :course_present
     validates :training_starts_at, presence: true
     validate :at_least_one_lead_provider_selected
+
+    def initialize(cohort:, course_cohort_params:, lead_provider_params:)
+      super(
+        course_cohort_params.merge(
+          cohort:,
+          lead_provider_params:,
+        ),
+      )
+    end
 
     def call
       return if invalid?
@@ -66,7 +75,7 @@ module CourseCohorts
   private
 
     def selected_providers
-      lead_providers&.select { |_, attrs| attrs["id"].present? && attrs["id"] != "0" }
+      lead_provider_params&.select { |_, attrs| attrs["id"].present? && attrs["id"] != "0" }
     end
 
     def course_present

@@ -6,10 +6,8 @@ RSpec.describe CourseCohorts::Create, type: :model do
   subject(:service) do
     described_class.new(
       cohort:,
-      course_id:,
-      training_starts_at:,
-      training_ends_at:,
-      lead_providers:,
+      course_cohort_params:,
+      lead_provider_params:,
     )
   end
 
@@ -19,7 +17,14 @@ RSpec.describe CourseCohorts::Create, type: :model do
   let(:training_starts_at) { Date.new(2025, 9, 1) }
   let(:training_ends_at) { nil }
   let!(:lead_provider) { create(:lead_provider) }
-  let(:lead_providers) do
+  let(:course_cohort_params) do
+    {
+      course_id:,
+      training_starts_at:,
+      training_ends_at:,
+    }
+  end
+  let(:lead_provider_params) do
     {
       lead_provider.id.to_s => {
         "id" => lead_provider.id.to_s,
@@ -43,13 +48,13 @@ RSpec.describe CourseCohorts::Create, type: :model do
     end
 
     context "when lead_providers is an empty hash" do
-      let(:lead_providers) { {} }
+      let(:lead_provider_params) { {} }
 
       it { is_expected.to be_invalid }
     end
 
     context "when lead_providers is present but none are selected" do
-      let(:lead_providers) do
+      let(:lead_provider_params) do
         { lead_provider.id.to_s => { "id" => "" } }
       end
 
@@ -58,7 +63,7 @@ RSpec.describe CourseCohorts::Create, type: :model do
     end
 
     context "when lead_providers only contains an id of '0'" do
-      let(:lead_providers) do
+      let(:lead_provider_params) do
         { lead_provider.id.to_s => { "id" => "0" } }
       end
 
@@ -165,7 +170,7 @@ RSpec.describe CourseCohorts::Create, type: :model do
       end
 
       context "when teacher_funding and recruitment_target are blank strings" do
-        let(:lead_providers) do
+        let(:lead_provider_params) do
           {
             lead_provider.id.to_s => {
               "id" => lead_provider.id.to_s,
@@ -198,7 +203,7 @@ RSpec.describe CourseCohorts::Create, type: :model do
 
       context "when there are multiple selected lead providers" do
         let(:other_lead_provider) { create(:lead_provider) }
-        let(:lead_providers) do
+        let(:lead_provider_params) do
           {
             lead_provider.id.to_s => {
               "id" => lead_provider.id.to_s,
@@ -224,7 +229,7 @@ RSpec.describe CourseCohorts::Create, type: :model do
       context "when a lead provider is present but not selected" do
         let(:unselected_lead_provider) { create(:lead_provider) }
         let(:another_unselected_lead_provider) { create(:lead_provider) }
-        let(:lead_providers) do
+        let(:lead_provider_params) do
           {
             lead_provider.id.to_s => {
               "id" => lead_provider.id.to_s,
