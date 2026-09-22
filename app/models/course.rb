@@ -25,6 +25,14 @@ class Course < ApplicationRecord
       find_by(identifier: "tte-early-years")
   end
 
+  def open_course_cohorts
+    open_course_cohorts = course_cohorts.includes(:cohort).select do |course_cohort|
+      course_cohort.cohort.start_year == academic_year
+    end
+
+    open_course_cohorts.select { |course_cohort| course_cohort.cohort.registration_open? || course_cohort.cohort.registration_upcoming? }
+  end
+
   def rebranded_alternative_courses
     [self]
   end
@@ -33,5 +41,11 @@ class Course < ApplicationRecord
     return TTE_RECEPTION if identifier == TTE_EARLY_YEARS
 
     identifier
+  end
+
+private
+
+  def academic_year(date = Time.zone.today)
+    date.month >= 9 ? date.year : date.year - 1
   end
 end

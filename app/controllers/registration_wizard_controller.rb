@@ -4,13 +4,11 @@ class RegistrationWizardController < PublicPagesController
   before_action :set_wizard
   before_action :redirect_to_closed_if_no_course_cohort, only: :show
   before_action :set_form
-  before_action :check_duplicate_applications, only: %i[update]
+  before_action :check_duplicate_applications, only: %i[show]
   before_action :ensure_can_render_step, only: :show
 
   rescue_from FundingEligibility::MissingMandatoryInstitution, with: :redirect_to_institution_picker
   rescue_from RegistrationWizard::RemovedStep, with: :redirect_to_course_start_date
-
-  helper_method :course, :course_cohort
 
   def show
     @form.flag_as_changing_answer if params[:changing_answer] == "1"
@@ -84,9 +82,10 @@ private
 
   def redirect_to_closed_if_no_course_cohort
     return unless params[:step].to_s == "course-start-date"
-    return if @wizard.query_store.course_cohort
 
-    redirect_to registration_wizard_show_path(:closed)
+    if @wizard.query_store.course.open_course_cohorts.blank?
+      redirect_to registration_wizard_show_path(:closed)
+    end
   end
 
   def redirect_to_course_start_date
@@ -119,15 +118,20 @@ private
   end
 
   def check_duplicate_applications
-    return unless @wizard.current_step.to_s == "course_start_date"
-    return unless course_cohort
+    return if params[:step].to_s == "closed"
+    return if Feature.registration_closed?(current_user)
+    return if @wizard.query_store.course_cohort.blank?
+    return unless @wizard.previous_step_path == "course-start-date"
 
-    active_applications = current_user.applications.active_applications.where(course_cohort:)
+    active_applications = current_user.applications
+      .active_applications
+      .where(course_cohort: @wizard.query_store.course.course_cohorts)
+
     return if active_applications.empty?
 
     flash[:alert] = {
       title: "Application already registered",
-      message: "You have already made an application for #{course.name}",
+      message: "You have already made an application for #{@wizard.query_store.course.name}",
     }
 
     redirect_to application_path(active_applications.last.ecf_id)
@@ -153,13 +157,5 @@ private
     return {} if Feature.registration_closed?(current_user)
 
     params.fetch(:registration_wizard, {}).permit(RegistrationWizard.permitted_params_for_step(params[:step].underscore))
-  end
-
-  def course
-    @course ||= Course.reception
-  end
-
-  def course_cohort
-    @course_cohort ||= CourseCohort.next_open_for(course:)
   end
 end

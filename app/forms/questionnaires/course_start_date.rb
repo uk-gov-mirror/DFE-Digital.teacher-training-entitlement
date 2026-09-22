@@ -12,7 +12,7 @@ module Questionnaires
 
     include ApplicationHelper
 
-    QUESTION_NAME = :course_start_date
+    QUESTION_NAME = :course_cohort_ecf_id
 
     attr_accessor QUESTION_NAME
 
@@ -25,7 +25,7 @@ module Questionnaires
     def questions
       [
         Form.new(
-          name: :course_start_date,
+          name: :course_cohort_ecf_id,
           options:,
           style_options: { legend: { size: "m", tag: "h2" } },
         ),
@@ -33,15 +33,16 @@ module Questionnaires
     end
 
     def options
-      [
-        build_option_struct(
-          value: "yes",
-          label: application_course_start_date,
-          link_errors: true,
-          hint: "You can also select this option if you've already started",
-        ),
-        build_option_struct(value: "later", label: "I want to start at a later date"),
-      ]
+      @options ||=
+        open_course_cohorts.map { |course_cohort|
+          build_option_struct(
+            value: course_cohort.ecf_id,
+            label: course_cohort.name,
+            link_errors: true,
+          )
+        } + [
+          build_option_struct(value: "later", label: "I want to start at a later date"),
+        ]
     end
 
     def requirements_met?
@@ -49,13 +50,12 @@ module Questionnaires
     end
 
     def next_step
-      if course_start_date == "yes"
-        wizard.store["course_start"] = application_course_start_date
-        wizard.current_user.update!(notify_user_for_future_reg: false)
-        :choose_your_provider
-      else
+      if course_cohort_ecf_id == "later"
         wizard.current_user.update!(notify_user_for_future_reg: true)
         :cannot_register_yet
+      else
+        wizard.current_user.update!(notify_user_for_future_reg: false)
+        :choose_your_provider
       end
     end
 
@@ -63,8 +63,8 @@ module Questionnaires
       :start
     end
 
-    def application_course_start_date
-      @application_course_start_date ||= query_store.course_cohort&.name || "Registration closed"
+    def open_course_cohorts
+      @open_course_cohorts ||= query_store.course.open_course_cohorts
     end
   end
 end

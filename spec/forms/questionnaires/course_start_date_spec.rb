@@ -9,17 +9,20 @@ RSpec.describe Questionnaires::CourseStartDate, type: :model do
     let(:instance) { described_class.new }
     let(:wizard) { RegistrationWizard.new(store:, request:, current_step: :course_start_date, current_user:) }
     let(:request) { nil }
+    let(:course) { create(:course, :npd_eirt) }
+    let(:cohort) { create(:cohort, :current) }
+    let(:course_cohort) { create(:course_cohort, course:, cohort:) }
     let(:store) { {} }
     let(:current_user) { create :user }
 
     context "when selecting a later start date" do
-      before { instance.course_start_date = "january_to_march_2027" }
+      before { instance.course_cohort_ecf_id = "later" }
 
       it { is_expected.to eq :cannot_register_yet }
     end
 
     context "when selecting the open cohort" do
-      before { instance.course_start_date = "yes" }
+      before { instance.course_cohort_ecf_id = course_cohort.ecf_id }
 
       it { is_expected.to eq :choose_your_provider }
     end

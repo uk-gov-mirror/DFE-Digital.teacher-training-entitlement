@@ -25,7 +25,7 @@ RSpec.feature "Sad journey", :with_default_lead_provider, type: :feature do
     end
 
     expect_page_to_have(path: "/registration/course-start-date", submit_form: true) do
-      page.choose(CourseCohort.next_open_for(course: Course.reception).name, visible: :all)
+      page.choose(Course.reception.open_course_cohorts.last.name, visible: :all)
     end
 
     expect_page_to_have(path: "/registration/choose-your-provider", submit_form: true) do

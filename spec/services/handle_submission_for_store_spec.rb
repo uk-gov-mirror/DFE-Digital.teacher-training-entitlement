@@ -15,7 +15,7 @@ RSpec.describe HandleSubmissionForStore do
     {
       "current_user_id" => user.id,
       "course_identifier" => course.identifier,
-      "course_cohort_id" => course_cohort.id,
+      "course_cohort_ecf_id" => course_cohort.ecf_id,
       "institution_id" => private_childcare_provider.institution.id,
       "lead_provider_id" => lead_provider.id,
       "works_in_childcare" => "yes",
@@ -65,7 +65,7 @@ RSpec.describe HandleSubmissionForStore do
         {
           "current_user" => user,
           "course_identifier" => course.identifier,
-          "course_cohort_id" => course_cohort.id,
+          "course_cohort_ecf_id" => course_cohort.ecf_id,
           "lead_provider_id" => lead_provider.id,
         }
       end
@@ -81,7 +81,7 @@ RSpec.describe HandleSubmissionForStore do
         {
           "current_user_id" => user.id,
           "course_identifier" => course.identifier,
-          "course_cohort_id" => course_cohort.id,
+          "course_cohort_ecf_id" => course_cohort.ecf_id,
           "institution_id" => school.institution.id,
           "lead_provider_id" => lead_provider.id,
           "works_in_school" => "yes",
@@ -171,7 +171,7 @@ RSpec.describe HandleSubmissionForStore do
         {
           "current_user_id" => user.id,
           "course_identifier" => course.identifier,
-          "course_cohort_id" => course_cohort.id,
+          "course_cohort_ecf_id" => course_cohort.ecf_id,
           "institution_id" => private_childcare_provider.institution.id,
           "lead_provider_id" => lead_provider.id,
           "works_in_childcare" => "yes",
@@ -225,7 +225,7 @@ RSpec.describe HandleSubmissionForStore do
         {
           "current_user_id" => user.id,
           "course_identifier" => course.identifier,
-          "course_cohort_id" => course_cohort.id,
+          "course_cohort_ecf_id" => course_cohort.ecf_id,
           "institution_id" => private_childcare_provider.institution.id,
           "lead_provider_id" => lead_provider.id,
           "works_in_childcare" => "yes",
@@ -284,7 +284,7 @@ RSpec.describe HandleSubmissionForStore do
         {
           "current_user_id" => user.id,
           "course_identifier" => course.identifier,
-          "course_cohort_id" => course_cohort.id,
+          "course_cohort_ecf_id" => course_cohort.ecf_id,
           "institution_id" => private_childcare_provider.institution.id,
           "lead_provider_id" => lead_provider.id,
           "works_in_childcare" => "yes",

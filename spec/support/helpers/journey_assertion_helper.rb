@@ -42,12 +42,12 @@ module Helpers
     end
 
     def seed_course_cohort_in_registration_store
-      course_cohort = CourseCohort.next_open_for(course: Course.reception)
+      course_cohort = Course.reception.open_course_cohorts.last
       return unless course_cohort
 
       page.set_rack_session(
         "registration_store" => {
-          "course_cohort_id" => course_cohort.id,
+          "course_cohort_ecf_id" => course_cohort.ecf_id,
         },
       )
     end

@@ -46,10 +46,10 @@ RSpec.describe RegistrationWizardController do
   describe "#show" do
     let(:make_request) { get(:show, params: { step: "course-start-date" }) }
     let(:course) { Course.reception || create(:course) }
-    let(:course_cohort) { CourseCohort.next_open_for(course:) || create(:course_cohort, course:) }
+    let(:course_cohort) { create(:course_cohort, course:) }
 
     before do
-      session["registration_store"] = { "course_cohort_id" => course_cohort.id }
+      session["registration_store"] = { "course_cohort_ecf_id" => course_cohort.ecf_id }
     end
 
     it_behaves_like "it redirects on missing mandatory institution"
@@ -78,25 +78,42 @@ RSpec.describe RegistrationWizardController do
     end
 
     context "when application already submitted for course" do
-      let!(:application) { create(:application, :accepted, course:, cohort: course_cohort.cohort, user: current_user) }
-      let(:step) { nil }
+      let!(:application) { create(:application, :accepted, course_cohort:, user: current_user) }
+      let(:step) { "choose-your-provider" }
 
       before do
-        session["registration_store"] = { "course_identifier" => course.identifier, "course_cohort_id" => course_cohort.id }
-        patch(:update, params: { step: })
+        session["registration_store"] = { "course_identifier" => course.identifier, "course_cohort_ecf_id" => course_cohort.ecf_id }
+        application
+        get(:show, params: { step: })
       end
 
-      context "when step is course start date" do
-        let(:step) { "course-start-date" }
-
+      context "when rendering the step after course start date" do
         it "redirects to account/registration page with alert" do
           expect(response).to redirect_to application_path(application.ecf_id)
           expect(flash[:alert]).to eq({ title: "Application already registered", message: "You have already made an application for #{course.name}" })
         end
       end
 
-      context "when step is chose your provider" do
+      context "when the application is for another cohort on the same course" do
+        let(:application_course_cohort) do
+          create(
+            :course_cohort,
+            course:,
+            cohort: create(:cohort, registration_starts_at: course_cohort.cohort.registration_starts_at.next_year),
+          )
+        end
+        let!(:application) { create(:application, :accepted, course_cohort: application_course_cohort, user: current_user) }
         let(:step) { "choose-your-provider" }
+
+        prepend_before { application }
+
+        it "redirects to the existing application" do
+          expect(response).to redirect_to application_path(application.ecf_id)
+        end
+      end
+
+      context "when rendering the course start date step" do
+        let(:step) { "course-start-date" }
 
         it "does not redirect, just renders the step" do
           expect(response).to be_successful
@@ -106,7 +123,9 @@ RSpec.describe RegistrationWizardController do
   end
 
   describe "#update" do
-    let(:wizard_params) { { course_start_date: "yes" } }
+    let(:course) { Course.reception || create(:course) }
+    let(:course_cohort) { create(:course_cohort, course:) }
+    let(:wizard_params) { { course_cohort_ecf_id: course_cohort.ecf_id } }
     let(:make_request) { patch :update, params: { step: "course-start-date", registration_wizard: wizard_params } }
 
     it_behaves_like "it redirects on missing mandatory institution"
@@ -123,7 +142,7 @@ RSpec.describe RegistrationWizardController do
 
     it "persists data to session" do
       make_request
-      expect(session["registration_store"]["course_start_date"]).to eql("yes")
+      expect(session["registration_store"]["course_cohort_ecf_id"]).to eql(course_cohort.ecf_id)
     end
 
     context "when updating the work setting step" do

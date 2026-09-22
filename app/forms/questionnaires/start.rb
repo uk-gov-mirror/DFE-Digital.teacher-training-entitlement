@@ -14,5 +14,9 @@ module Questionnaires
         :start
       end
     end
+
+    def previous_step
+      :start
+    end
   end
 end
