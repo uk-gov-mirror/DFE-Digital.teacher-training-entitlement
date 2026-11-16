@@ -91,6 +91,9 @@ FactoryBot.define do
     end
 
     trait :previously_funded do
+      eligible_for_funding { false }
+      funding_ineligible_reason { FundingEligibility::PREVIOUSLY_FUNDED }
+
       after(:create) do |application|
         course = application.course.rebranded_alternative_courses.first
         previous_registration_starts_at = application.cohort.registration_starts_at.prev_month

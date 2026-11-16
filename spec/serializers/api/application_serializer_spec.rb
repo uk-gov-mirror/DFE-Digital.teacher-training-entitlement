@@ -63,7 +63,7 @@ RSpec.describe API::ApplicationSerializer, type: :serializer do
     end
 
     it "serializes the `ineligible_for_funding_reason`" do
-      application.funding_eligiblity_status_code = "ineligible_setting"
+      application.funding_ineligible_reason = "ineligible_setting"
       expect(attributes["ineligible_for_funding_reason"]).to eq("ineligible_setting")
     end
 

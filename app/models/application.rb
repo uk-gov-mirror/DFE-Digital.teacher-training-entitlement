@@ -184,31 +184,6 @@ class Application < ApplicationRecord
     rejected_event&.reason
   end
 
-  def previously_funded?
-    # This is an optimization used by the API Applications::Query in order
-    # to speed up the bulk-retrieval of Applications.
-    return transient_previously_funded if respond_to?(:transient_previously_funded)
-
-    @previously_funded ||= user.applications
-      .where.not(id:)
-      .has_been_accepted
-      .eligible_for_funding
-      .where(funded_place: [nil, true])
-      .exists?
-  end
-
-  def ineligible_for_funding_reason
-    return "previously-funded" if previously_funded?
-
-    "establishment-ineligible" unless eligible_for_funding
-  end
-
-  def fundable?
-    return false if previously_funded?
-
-    eligible_for_funding && (funded_place.nil? || funded_place)
-  end
-
   def transition_status!(status, reason: nil, metadata: {}, **attributes)
     metadata.merge!(reason:) if reason.present?
     self.class.transaction do

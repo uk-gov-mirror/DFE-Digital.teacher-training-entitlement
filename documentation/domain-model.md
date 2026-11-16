@@ -167,7 +167,7 @@ erDiagram
     boolean eligible_for_funding
     boolean funded_place
     enum funding_choice
-    string funding_eligiblity_status_code
+    string funding_ineligible_reason
     integer institution_id
     string notes
     enum status

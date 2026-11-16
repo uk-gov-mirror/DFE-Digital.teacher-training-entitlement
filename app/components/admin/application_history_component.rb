@@ -21,7 +21,7 @@ module Admin
         .select { |version| (version.object_changes.keys - %w[updated_at]).any? }
         .pluck(:created_at, :whodunnit, :object_changes)
         .map { |created_at, whodunnit, object_changes|
-        object_changes.except("updated_at", "funding_eligiblity_status_code", "status").map do |key, value|
+        object_changes.except("updated_at", "funding_ineligible_reason", "funding_eligiblity_status_code", "status").map do |key, value|
           {
             title: show_object_changes(key, value),
             by: show_whodunnit(whodunnit),
@@ -88,7 +88,7 @@ module Admin
       when "notes"
         { details_summary: "Review notes", details: simple_format(value[1]) }
       when "eligible_for_funding"
-        { bullet: "Status code changed to #{object_changes.dig('funding_eligiblity_status_code', 1)}" }
+        { bullet: "Status code changed to #{(object_changes["funding_ineligible_reason"] || object_changes["funding_eligiblity_status_code"])&.dig(1)}" }
       end
     end
 

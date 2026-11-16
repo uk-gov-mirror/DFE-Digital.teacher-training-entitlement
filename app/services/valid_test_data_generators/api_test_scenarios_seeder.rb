@@ -387,7 +387,7 @@ module ValidTestDataGenerators
       {
         funded_place: (eligible_for_funding unless status == Application::PENDING),
         eligible_for_funding:,
-        funding_eligiblity_status_code: (:ineligible_setting unless eligible_for_funding),
+        funding_ineligible_reason: (:ineligible_setting unless eligible_for_funding),
         institution: eligible_for_funding ? institutions_eligible : institutions_ineligible,
         funding_choice: eligible_for_funding ? "school" : (Application.funding_choices.values - %w[school]).sample,
       }

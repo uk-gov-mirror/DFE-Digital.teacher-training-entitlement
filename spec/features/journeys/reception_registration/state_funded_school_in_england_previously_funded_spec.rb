@@ -39,7 +39,7 @@ RSpec.feature "Registration wizard paths", :no_js, :with_default_lead_provider, 
         eligible_for_funding: false,
         funded_place: nil,
         funding_choice: "self",
-        funding_eligiblity_status_code: "previously_funded",
+        funding_ineligible_reason: "previously_funded",
         institution_id: institution.id, status: Application::PENDING,
         teacher_catchment: Institution::ENGLAND_SUBDIVISION_CODE,
         work_setting: Institution::STATE_FUNDED_INSTITUTION

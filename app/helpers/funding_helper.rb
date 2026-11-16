@@ -22,10 +22,10 @@ module FundingHelper
 
   def funding_status_badge(application)
     text = "Not eligible"
-    if application.funding_eligiblity_status_code.to_s == FundingEligibility::FUNDED_ELIGIBILITY_RESULT.to_s
+    if application.funding_ineligible_reason.to_s == FundingEligibility::FUNDED_ELIGIBILITY_RESULT.to_s
       text = "Eligible"
     end
-    govuk_tag(text:, colour: funding_status_colour(application.funding_eligiblity_status_code))
+    govuk_tag(text:, colour: funding_status_colour(application.funding_ineligible_reason))
   end
 
 private

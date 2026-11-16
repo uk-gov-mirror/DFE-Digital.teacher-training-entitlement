@@ -12,7 +12,7 @@ class HandleSubmissionForStore
         application_lead_providers: [ApplicationLeadProvider.new(current: true, lead_provider_id: store["lead_provider_id"], assigned_at: Time.zone.now)],
         institution: (institution_from_store if inside_catchment?),
         eligible_for_funding: funding_eligibility_service.funded?,
-        funding_eligiblity_status_code: funding_eligibility_service.funding_eligiblity_status_code,
+        funding_ineligible_reason: funding_eligibility_service.funding_eligiblity_status_code,
         funding_choice:,
         teacher_catchment: store["teacher_catchment"],
         work_setting: store["work_setting"],

@@ -16,14 +16,14 @@ module Applications
       return if invalid?
 
       @application.update!(eligible_for_funding: @eligible_for_funding,
-                           funding_eligiblity_status_code:)
+                           funding_ineligible_reason:)
 
       send_eligible_for_funding_email if @application.eligible_for_funding?
     end
 
   private
 
-    def funding_eligiblity_status_code
+    def funding_ineligible_reason
       @eligible_for_funding ? :marked_funded_by_policy : :marked_ineligible_by_policy
     end
 

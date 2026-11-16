@@ -120,7 +120,7 @@ RSpec.feature "Happy journeys", :with_default_lead_provider, :with_default_schoo
       "eligible_for_funding" => true,
       "funded_place" => nil,
       "funding_choice" => nil,
-      "funding_eligiblity_status_code" => "funded",
+      "funding_ineligible_reason" => "funded",
       "status" => "pending",
       "notes" => nil,
       "institution_id" => Institution.find_by(institution_reference_number: "100000").id,

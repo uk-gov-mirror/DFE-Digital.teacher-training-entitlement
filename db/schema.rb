@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_11_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_16_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "citext"
@@ -127,7 +127,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_11_130000) do
     t.boolean "eligible_for_funding", default: false, null: false
     t.boolean "funded_place"
     t.enum "funding_choice", enum_type: "funding_choices"
-    t.string "funding_eligiblity_status_code"
+    t.string "funding_ineligible_reason"
     t.bigint "institution_id"
     t.string "notes"
     t.enum "status", enum_type: "application_statuses"
